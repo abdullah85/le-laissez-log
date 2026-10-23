@@ -23,3 +23,7 @@ The objective in the Write step is:
 * Ensure user decides the level of control in writing.
 
 Both the Understand and Write steps are interactive and the user may transition back and forth between the two.
+
+# Implementation 
+
+For the collection phase,[ActivityWatch](https://activitywatch.net/) looks like a good plac to start exploring.
