@@ -26,4 +26,6 @@ Both the Understand and Write steps are interactive and the user may transition 
 
 # Implementation 
 
-For the collection phase,[ActivityWatch](https://activitywatch.net/) looks like a good plac to start exploring.
+For the collection phase,[ActivityWatch](https://activitywatch.net/) looks like a good place to start exploring.
+
+Another tool is [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight.
