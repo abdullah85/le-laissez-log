@@ -29,3 +29,10 @@ Both the Understand and Write steps are interactive and the user may transition 
 For the collection phase,[ActivityWatch](https://activitywatch.net/) looks like a good place to start exploring.
 
 Another tool is [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight.
+
+# Updates
+
+Got `ActivityWatch` setup locally ... 
+
+<img width="3797" height="2043" alt="Screenshot from 2026-10-25 22-49-54" src="https://github.com/user-attachments/assets/d0e6fb5a-6044-4e66-a96c-63831f9e860c" />
+The project is quite interesting in and of itself and requires further exploration.
