@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Terminal session recordings from `script` (default output file)
+/typescript
