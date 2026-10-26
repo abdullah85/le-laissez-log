@@ -36,6 +36,7 @@ import time
 import tty
 from datetime import datetime, timezone
 
+import requests
 from aw_client import ActivityWatchClient
 from aw_core.models import Event
 
@@ -72,7 +73,13 @@ def main():
 
     client = ActivityWatchClient("aw-watcher-terminal", testing=args.testing)
     bucket = f"aw-watcher-terminal_{client.client_hostname}"
-    client.create_bucket(bucket, event_type="app.terminal.command")
+    try:
+        client.create_bucket(bucket, event_type="app.terminal.command")
+    except requests.exceptions.ConnectionError:
+        port = 5666 if args.testing else 5600
+        sys.exit(f"Could not reach aw-server on localhost:{port}.\n"
+                 f"Start it first ('aw-server{' --testing' if args.testing else ''}'), "
+                 f"and make sure --testing matches how the server was started.")
 
     pid, master = pty.fork()
     if pid == 0:
