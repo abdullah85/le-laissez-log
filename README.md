@@ -30,6 +30,22 @@ For the collection phase,[ActivityWatch](https://activitywatch.net/) looks like 
 
 Another tool is [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight.
 
+## Setup
+
+ActivityWatch is built from source, pinned as a git submodule in `vendor/activitywatch`.
+Requires Python 3.12, Node.js/npm (for the web UI) and Poetry.
+
+```bash
+git clone --recursive git@github.com:abdullah85/le-laissez-log.git
+cd le-laissez-log
+make setup    # venv in .venv + ActivityWatch build + project deps
+make server   # terminal 1: aw-server in testing mode (http://localhost:5666)
+make run      # terminal 2: the terminal watcher
+```
+
+To update ActivityWatch, check out a newer commit in `vendor/activitywatch`, run
+`git submodule update --init --recursive` inside it, then `make aw` and commit the new pin.
+
 # Updates
 
 Got `ActivityWatch` setup locally ... 

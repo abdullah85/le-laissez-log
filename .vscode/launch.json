@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "aw-watcher-terminal (--testing)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/aw_watcher_terminal.py",
+      "args": ["--testing"],
+      "console": "integratedTerminal"
+    }
+  ]
+}
