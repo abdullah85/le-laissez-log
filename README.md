@@ -2,12 +2,14 @@
 
 Le Laissez Log: to help create entries for documenting what you learn, lazily in the background.
 
+**Note**:
+I created this repository as part of my [week 3 entry](https://dev.to/devteam/join-the-hacktoberfest-open-source-ai-challenge-slow-and-steady-2850-in-prizes-across-21-3iee) for Hacktoberfest. The [submitted post](https://dev.to/abdullah85/le-laissez-log-record-what-you-learn-everyday-lazily-in-the-background-2ogb) describes an initial version. The [initial version](https://github.com/abdullah85/le-laissez-log/tree/5cb36a1f077f4fa164feb8a31134a199aebc14c3) was hurriedly developed with Claude Code for submitting within the deadline. I did cover a lot of ground especially getting to know more about activity watch and how it works. I hope to continue developing this further.
+
 The pipeline or workflow consists of the following:
 ```
 Collect -> Understand -> Write 
 ```
 
-I hope this will be my [week 3 entry](https://dev.to/devteam/join-the-hacktoberfest-open-source-ai-challenge-slow-and-steady-2850-in-prizes-across-21-3iee) for Hacktoberfest.
 
 The Collect phase will need to collect or track: 
 * commands, keystrokes entered in the terminal,
@@ -22,15 +24,17 @@ The objective in the Understand phase is to ensure the following:
 The objective in the Write step is:
 * Ensure user decides the level of control in writing.
 
-Both the Understand and Write steps are interactive and the user may transition back and forth between the two.
+Both the Understand and Write steps are interactive.
+
+The user may transition back and forth between the Understand and Write steps.
 
 # Implementation 
 
-For the collection phase,[ActivityWatch](https://activitywatch.net/) looks like a good place to start exploring.
+For the collection phase, [ActivityWatch](https://activitywatch.net/) looks like a good place to start exploring.
 
 Another tool is [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight.
 
-## Setup
+## Setup with Makefile
 
 ActivityWatch is built from source, pinned as a git submodule in `vendor/activitywatch`.
 Requires Python 3.12, Node.js/npm (for the web UI) and Poetry.
@@ -43,12 +47,129 @@ make server   # terminal 1: aw-server in testing mode (http://localhost:5666)
 make run      # terminal 2: the terminal watcher
 ```
 
-To update ActivityWatch, check out a newer commit in `vendor/activitywatch`, run
-`git submodule update --init --recursive` inside it, then `make aw` and commit the new pin.
+## Manual Setup (without using Make)
 
-# Updates
+In this section, we provide the actual commands for setting up the application for better transparency.
 
-Got `ActivityWatch` setup locally ... 
+ActivityWatch is built from source, pinned as a git submodule in `vendor/activitywatch`.
+
+Requires Python 3.12, Node.js/npm (for the web UI) and Poetry.
+
+
+```bash
+# 1. Get the code, including the pinned ActivityWatch source
+git clone git@github.com:abdullah85/le-laissez-log.git
+cd le-laissez-log
+git submodule update --init --recursive
+
+# 2. Project-local virtualenv
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+
+# 3. ActivityWatch's Python packages, editable from the submodule
+pip install -e vendor/activitywatch/aw-core \
+            -e vendor/activitywatch/aw-client \
+            -e vendor/activitywatch/aw-server
+
+# 4. The web UI (a Vue app), built and copied into aw-server's static folder
+cd vendor/activitywatch/aw-server/aw-webui
+npm ci
+npm run build
+mkdir -p ../aw_server/static
+cp -r dist/* ../aw_server/static/
+cd -
+
+# 5. This project's own dependencies
+pip install -r requirements.txt
+```
+
+Then run, in two terminals (with the venv active):
+
+```bash
+aw-server --testing                       # terminal 1: http://localhost:5666
+python aw_watcher_terminal.py --testing   # terminal 2: the terminal watcher
+```
+
+Where things live in `vendor/activitywatch`:
+
+| Path | What it is |
+| --- | --- |
+| `aw-core` | Data models (`Event`), storage and query engine |
+| `aw-client` | Python client the watcher uses to talk to the server |
+| `aw-server` | The Flask REST API server (`aw-server` command) |
+| `aw-server/aw-webui` | The web UI served at http://localhost:5666 |
+
+After editing Python code in these folders, restart `aw-server` (or the watcher) to pick it up.
+
+After editing the web UI, repeat step 4 to deploy the built Web UI to server.
+
+The `Makefile` wraps these same steps as shortcuts: `make setup`, `make server` and `make run`.
+
+# Results
+
+With `aw-server --testing` running, open http://localhost:5666 and you should see something similar to this:
 
 <img width="3797" height="2043" alt="Screenshot from 2026-10-25 22-49-54" src="https://github.com/user-attachments/assets/d0e6fb5a-6044-4e66-a96c-63831f9e860c" />
-The project is quite interesting in and of itself and requires further exploration.
+
+## Try it out: the terminal watcher
+
+Once you have followed one of the setup sections above, give the watcher a spin:
+
+1. Start the server: `aw-server --testing`
+2. In another terminal, start a watched shell: `python aw_watcher_terminal.py --testing`
+3. Type a few commands, for example `man ls` (press `q` to quit), `ls -la` and `cat aw` followed by Tab, then `exit`.
+4. Open http://localhost:5666/#/buckets and click the `aw-watcher-terminal_<hostname>` bucket
+
+See *Viewing the data* below for the Timeline view and the REST API.
+
+You should see one event per command. Here is what a sample run looked like:
+
+| Time (UTC) | `cmd` | `output_bytes` | `approx` | Notes |
+| --- | --- | --- | --- | --- |
+| 07:06:40 | `man ls` | 969 | false | the start of the man page is kept in `output_head` |
+| 07:06:45 | `ls -la` | 990 | false | |
+| 07:06:49 | `cat aw` | 9866 | true | tab-completed to `aw_watcher_terminal.py`; only the typed keys were seen |
+| 07:06:52 | `exit` | 17 | false | |
+
+A single event as returned by `/api/0/buckets/aw-watcher-terminal_<hostname>/events` is as below:
+
+```json
+{
+    "id": 20,
+    "timestamp": "2026-11-02T07:06:45.067000+00:00",
+    "duration": 0.00521,
+    "data": {
+        "cmd": "ls -la",
+        "approx": false,
+        "output_bytes": 990,
+        "output_head": "total 72\ndrwxrwxr-x  6 <user> <user> 4096 Nov  2 12:12 .\n..."
+    }
+}
+```
+
+Your timestamps, sizes and output will of course differ. Note the `cat aw` row: commands finished
+with Tab are stored with only the part you typed and flagged `approx: true`. This is a known
+limitation to improve in the Collect phase.
+
+## Viewing the data
+
+Each command is stored as an event in the bucket `aw-watcher-terminal_<hostname>`, with `cmd`,
+`output_head`, `output_bytes` and `approx` fields.
+
+* **Web UI:** http://localhost:5666/#/buckets lists the buckets; click one to see its events.
+  http://localhost:5666/#/timeline shows them alongside other watchers.
+  (The main *Activity* dashboard only covers the window and AFK watchers, so it won't show them.)
+* **REST API:** http://localhost:5666/api/0/buckets/ lists all buckets, and interactive API docs are
+  at http://localhost:5666/api/. For example, to fetch the latest events from the shell:
+
+  ```bash
+  curl -s "http://localhost:5666/api/0/buckets/aw-watcher-terminal_$(hostname)/events?limit=10" | python3 -m json.tool
+  ```
+
+# Updating ActivityWatch
+
+To move to a newer ActivityWatch, check out the commit you want in `vendor/activitywatch` and run
+`git submodule update --init --recursive` inside it. Then rebuild, either with `make aw` or by
+repeating steps 3 and 4 of the Manual Setup, and commit the new submodule pin in this repo.
+
