@@ -2,8 +2,11 @@
 
 Le Laissez Log: to help create entries for documenting what you learn, lazily in the background.
 
-**Note**:
+## **Note**
+
 I created this repository as part of my [week 3 entry](https://dev.to/devteam/join-the-hacktoberfest-open-source-ai-challenge-slow-and-steady-2850-in-prizes-across-21-3iee) for Hacktoberfest. The [submitted post](https://dev.to/abdullah85/le-laissez-log-record-what-you-learn-everyday-lazily-in-the-background-2ogb) describes an initial version. The [initial version](https://github.com/abdullah85/le-laissez-log/tree/5cb36a1f077f4fa164feb8a31134a199aebc14c3) was hurriedly developed with Claude Code for submitting within the deadline. I did cover a lot of ground especially getting to know more about activity watch and how it works. I hope to continue developing this further.
+
+## About
 
 The pipeline or workflow consists of the following:
 ```
@@ -36,8 +39,7 @@ Another tool is [atuinsh](https://github.com/atuinsh/atuin) which is quite popul
 
 ## Setup with Makefile
 
-ActivityWatch is built from source, pinned as a git submodule in `vendor/activitywatch`.
-Requires Python 3.12, Node.js/npm (for the web UI) and Poetry.
+ActivityWatch is built from source, pinned as a git submodule in `vendor/activitywatch` and it requires Python 3.12, Node.js/npm (for the web UI) and Poetry.
 
 ```bash
 git clone --recursive git@github.com:abdullah85/le-laissez-log.git
@@ -46,6 +48,8 @@ make setup    # venv in .venv + ActivityWatch build + project deps
 make server   # terminal 1: aw-server in testing mode (http://localhost:5666)
 make run      # terminal 2: the terminal watcher
 ```
+
+The above commands simplify the installation process while the next section allows for customization.
 
 ## Manual Setup (without using Make)
 
