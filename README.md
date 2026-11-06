@@ -35,8 +35,9 @@ The user may transition back and forth between the Understand and Write steps.
 
 For the collection phase, [ActivityWatch](https://activitywatch.net/) looks like a good place to start exploring.
 
-## Atuin [TODO]
-Evaluate [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight.
+## Atuin
+
+Evaluate [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight and the evaluation is ongoing for this project with [Atuin.md](Atuin.md) recording the findings thus far.
 
 ## Setup with Makefile
 
