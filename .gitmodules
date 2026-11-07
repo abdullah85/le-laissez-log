@@ -2,3 +2,7 @@
 	path = vendor/activitywatch
 	url = https://github.com/ActivityWatch/activitywatch.git
 	ignore = dirty
+[submodule "vendor/atuin"]
+	path = vendor/atuin
+	url = https://github.com/atuinsh/atuin.git
+	ignore = dirty
