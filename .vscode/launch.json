@@ -2,6 +2,21 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "aw-server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "aw_server",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "aw-server (--testing)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "aw_server",
+      "args": ["--testing"],
+      "console": "integratedTerminal"
+    },
+    {
       "name": "aw-watcher-terminal (--testing)",
       "type": "debugpy",
       "request": "launch",
