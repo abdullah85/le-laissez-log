@@ -223,3 +223,6 @@ __marimo__/
 
 # Terminal session recordings from `script` (default output file)
 /typescript
+
+# Atuin trial data (scripts/atuin-trial.sh)
+.atuin-trial/

@@ -39,6 +39,13 @@ For the collection phase, [ActivityWatch](https://activitywatch.net/) looks like
 
 Evaluate [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight and the evaluation is ongoing for this project with [Atuin.md](Atuin.md) recording the findings thus far.
 
+To try it without changing your own shell setup:
+
+```bash
+make atuin        # build Atuin from vendor/atuin into .venv/bin
+make atuin-trial  # bash with Atuin hooked in (Ctrl-R / Up to search); history kept in .atuin-trial/
+```
+
 ## Setup with Makefile
 
 ActivityWatch is built from source, pinned as a git submodule in `vendor/activitywatch` and it requires Python 3.12, Node.js/npm (for the web UI) and Poetry.
