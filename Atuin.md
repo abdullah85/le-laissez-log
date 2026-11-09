@@ -27,10 +27,11 @@ That is, click on [Manual Installation](https://docs.atuin.sh/latest/guide/insta
 cargo install --path crates/atuin --locked --root $(CURDIR)/.venv
 ```
 
-* Running from inside the submodule lets rustup apply Atuin's `rust-toolchain.toml` (1.98.0); the system default is older than the workspace's `rust-version` (1.95.0).
-* `--locked` builds the exact dependency versions in `Cargo.lock`.
-* `--root` is the directory cargo puts `bin/` under (default `~/.cargo`, which is not on our `PATH`). Pointing it at the venv puts `atuin` next to the other project tools, so it is on `PATH` whenever the venv is active. It is absolute (`$(CURDIR)/...`) because the recipe `cd`s first.
-* Cargo records the install in `.venv/.crates.toml` and `.venv/.crates2.json`, so `cargo install --list --root .venv` and `cargo uninstall atuin --root .venv` work.
+* Running inside the submodule lets rustup use the toolchain pinned in Atuin's `rust-toolchain.toml` instead of the default toolchain.
+* `--locked` uses the exact dependency versions in `Cargo.lock`.
+* `--root` installs into `.venv/bin` instead of `~/.cargo/bin`, so `atuin` is on `PATH` whenever the venv is active.
+  * It is absolute (`$(CURDIR)/.venv`) because the recipe first `cd`s into `vendor/atuin` first.
+* To list or remove the install: `cargo install --list --root .venv`, `cargo uninstall atuin --root .venv`.
 
 ## Trying it out
 
