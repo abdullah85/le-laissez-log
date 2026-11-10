@@ -40,3 +40,34 @@ cargo install --path crates/atuin --locked --root $(CURDIR)/.venv
 `eval "$(atuin init bash)"` exports a per-shell `ATUIN_SESSION`, hooks every command (`atuin history start` before, `atuin history end` after) and binds Ctrl-R / Up to Atuin's search.
 
 Each command becomes a row in the `history` table of `.atuin-trial/data/history.db` (SQLite): `command`, `exit`, `duration` (ns), `cwd`, `session`, `hostname`, `timestamp`. The Collect phase could read this directly.
+
+## Findings
+
+Sync is ignored here, since the goal is local-first. Three things were explored:
+
+1. **`history.db`**: the `history` table stores one row per command: `command`, `exit`, `duration`, `cwd`, `session`, `hostname`, `timestamp`. `timestamp` and `duration` are in nanoseconds.
+   * To inspect it: `sqlite3 -readonly .atuin-trial/data/history.db`, then `PRAGMA table_info(history);`.
+   * The other tables don't matter for collecting events:
+     * `records.db` → `store` holds an encrypted copy of each command for sync.
+     * `records.db` → `records` is an old, unused table.
+     * `meta.db` → `meta` holds key/value settings such as `host_id`.
+2. **Search UI** (Up / Ctrl-R): an interactive view of the same table, showing duration, time and command, filterable by directory, session and so on.
+3. **`atuin stats`**: the most-used commands and total/unique counts, also computed from the `history` table.
+
+None of these capture what a command printed. They only record that it ran, and its exit code and duration.
+
+## Outlook: command output
+
+Atuin v18.24.5 has an opt-in output capture feature (`vendor/atuin/docs/docs/guide/output-capture.md`). It is off in the current trial config:
+
+* To enable it: `atuin config enable output-capture` (this turns on `[daemon]`, `[pty_proxy]` and `[output]`), then open a new shell.
+* `atuin pty-proxy` runs the shell inside a virtual terminal. The daemon stores each command's output, linked to its history entry, under `<data_dir>/output-capture/`. This is a separate store, not part of `history.db`.
+* To read it: press Ctrl-O in search, `atuin output search <text>`, or use Atuin's MCP server.
+* Limits:
+  * Only the final screen is stored; for example, a progress bar is saved as its last frame.
+  * Full-screen programs like `vim` and `less` are skipped.
+  * Output over 1 MB keeps only its start and end.
+  * Recognised secrets are replaced with `****`.
+* Captured output stays local and is never synced.
+
+Next step: enable it in `.atuin-trial`, then check whether the stored output can be read outside Atuin, for example with `atuin output search` or MCP, for the Collect phase.
