@@ -226,3 +226,4 @@ __marimo__/
 
 # Atuin trial data (scripts/atuin-trial.sh)
 .atuin-trial/
+.atuin-output/
