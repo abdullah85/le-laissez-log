@@ -1,6 +1,6 @@
 # Atuin
 
-Let's review the [atuinsh](https://github.com/atuinsh/atuin) here first.
+Let's review the [atuinsh](https://github.com/atuinsh/atuin) tool here.
 
 ## Motivation
 
@@ -13,7 +13,9 @@ The [Quickstart](https://docs.atuin.sh/latest/#quickstart) approach involves:
 curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 ```
 
-The above approach may be good for end users but not suitable for integration.
+The above approach may be good for end users but I need a better understanding of the various components used.
+Once I have a good understanding of `atuinsh` and how it works, we can consider how to integrate it.
+Also, I feel that we may not need the complete tool for an appropriate integration.
 
 Hence, to evaluate the tool, we need to use the source code approach for installation.
 
