@@ -131,7 +131,13 @@ Once you have followed one of the setup sections above, give the watcher a spin:
 
 1. Start the server: `aw-server --testing`
 2. In another terminal, start a watched shell: `python aw_watcher_terminal.py --testing`
-3. Type a few commands, for example `man ls` (press `q` to quit), `ls -la` and `cat aw` followed by Tab, then `exit`.
+3. Type a few commands, for example
+   ```
+   $ man ls # q to quit), 
+   $ ls -la
+   $ cat aw<Tab>
+   $ exit
+   ```
 4. Open http://localhost:5666/#/buckets and click the `aw-watcher-terminal_<hostname>` bucket
 
 See *Viewing the data* below for the Timeline view and the REST API.
