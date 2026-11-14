@@ -72,4 +72,44 @@ Atuin v18.24.5 has an opt-in output capture feature (`vendor/atuin/docs/docs/gui
   * Recognised secrets are replaced with `****`.
 * Captured output stays local and is never synced.
 
-Next step: enable it in `.atuin-trial`, then check whether the stored output can be read outside Atuin, for example with `atuin output search` or MCP, for the Collect phase.
+## Findings: command output
+
+`make atuin-output` runs a capture shell with `ATUIN_HOME=.atuin-output`. `echo capture-test-123` was captured and found again with `atuin output search capture`.
+
+### Setting it up
+
+* All three pieces are needed: the daemon, pty-proxy, and Atuin's hooks (`eval "$(atuin init bash)"`) in the shell that pty-proxy starts.
+  * A plain `atuin pty-proxy` starts bash with only `~/.bashrc`, which has no hooks, so nothing is captured. `echo $ATUIN_SESSION` is empty in such a shell.
+  * The Makefile hands pty-proxy `scripts/atuin-trial.bashrc`, which adds the venv and the hooks.
+* `ATUIN_OUTPUT__ENABLED=true` is the environment form of `[output] enabled = true` (`ATUIN_<SECTION>__<KEY>`). The Makefile sets it, and the capture shell inherits it.
+* To read output from another shell, activate the venv (`atuin` lives in `.venv/bin`) and set both variables:
+  `ATUIN_HOME=$PWD/.atuin-output ATUIN_OUTPUT__ENABLED=true atuin output search --style json capture`
+
+### Storage (`.atuin-output/data/`)
+
+Every store is linked by the history entry's `id`:
+
+* `history.db`: one row per command, as above.
+* `output-capture/`: the output itself.
+  * The docs only say it is stored here, keyed by history ID, and not to edit it.
+  * The source shows a [fjall](https://github.com/fjall-rs/fjall) key-value store. Its values are MessagePack `{output_start, output_end, output_observed_bytes, terminal_width, terminal_height}` (`vendor/atuin/crates/atuin-daemon/src/output_capture/persistence/blob/fjall/schema/v2.rs`).
+  * This format is internal and versioned (`output_capture_v2`), so it may change.
+* `output-capture-index-2.sqlite`: an FTS5 search index. It is contentless, so it holds only searchable words, not the text.
+* The other files (`records.db`, `key`, `meta.db`, `kv.db`, `scripts.db`, `threads.db`) are for sync, AI and Atuin's other features, not for collecting events.
+
+### Reading it
+
+* `atuin output search --style json <words>` ([reference](https://docs.atuin.sh/latest/reference/output/)) returns `id`, `timestamp_unix_ns`, `command`, `cwd`, `session`, `exit`, `duration_ns` and `output`.
+  * Words match whole words, ignoring case. Hyphens split words, so `capture` matches `capture-test-123`.
+* There is no command to list all output; search always needs a word.
+* The MCP server's `atuin_output` tool ([docs](https://docs.atuin.sh/latest/ai/mcp/)) fetches one command's output by history ID.
+* Gotchas:
+  * Saved output is a snapshot. A relative time such as `1m ago` inside it never updates; use `history.db`'s `timestamp`.
+  * The docs say searches are left out of search results, but `ATUIN_OUTPUT__ENABLED=true atuin output search …` was still returned, probably because of the prefix.
+  * The output of `… | less` is not stored, and its `duration` includes the time `less` was open.
+
+### Summary
+
+`history.db` is open: a plain SQLite table that can be queried and listed directly. Captured output is closed: it is stored in an internal binary format and can only be reached through Atuin, by search or by history ID, with no way to list it all. What comes back is clear text, linked to `history.db` by `id`.
+
+Next step: try the MCP server's `atuin_output` on each `id` from `history.db`, to read all output without needing a search word.
