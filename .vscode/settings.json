@@ -27,5 +27,6 @@
     "**/vendor/**": true,
     "**/.venv/**": true
   },
-  "python.analysis.exclude": ["vendor", ".venv"]
+  "python.analysis.exclude": ["vendor", ".venv"],
+  "rust-analyzer.linkedProjects": ["vendor/atuin/Cargo.toml"]
 }
