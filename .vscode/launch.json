@@ -23,6 +23,46 @@
       "program": "${workspaceFolder}/aw_watcher_terminal.py",
       "args": ["--testing"],
       "console": "integratedTerminal"
+    },
+    {
+      "name": "atuin daemon (debug build, .atuin-output)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/atuin/target/debug/atuin",
+      "args": ["daemon", "start", "--force", "--show-logs"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ATUIN_HOME": "${workspaceFolder}/.atuin-output",
+        "ATUIN_UPDATE_CHECK": "false",
+        "ATUIN_DAEMON__ENABLED": "true",
+        "ATUIN_OUTPUT__ENABLED": "true"
+      },
+      "sourceLanguages": ["rust"],
+      "terminal": "integrated"
+    },
+    {
+      "name": "atuin output search (debug build, .atuin-output)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/atuin/target/debug/atuin",
+      "args": ["output", "search", "${input:atuinQuery}"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ATUIN_HOME": "${workspaceFolder}/.atuin-output",
+        "ATUIN_UPDATE_CHECK": "false",
+        "ATUIN_DAEMON__ENABLED": "true",
+        "ATUIN_OUTPUT__ENABLED": "true"
+      },
+      "sourceLanguages": ["rust"],
+      "terminal": "integrated"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "atuinQuery",
+      "type": "promptString",
+      "description": "Words to search for in captured output",
+      "default": "capture"
     }
   ]
 }
