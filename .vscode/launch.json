@@ -55,6 +55,22 @@
       },
       "sourceLanguages": ["rust"],
       "terminal": "integrated"
+    },
+    {
+      "name": "atuin pty-proxy (debug build, .atuin-output)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/atuin/target/debug/atuin",
+      "args": ["pty-proxy", "--shell", "/bin/bash", "--shell", "--rcfile", "--shell", "scripts/atuin-trial.bashrc"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ATUIN_HOME": "${workspaceFolder}/.atuin-output",
+        "ATUIN_UPDATE_CHECK": "false",
+        "ATUIN_DAEMON__ENABLED": "true",
+        "ATUIN_OUTPUT__ENABLED": "true"
+      },
+      "sourceLanguages": ["rust"],
+      "terminal": "integrated"
     }
   ],
   "inputs": [
