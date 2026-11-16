@@ -113,3 +113,39 @@ Every store is linked by the history entry's `id`:
 `history.db` is open: a plain SQLite table that can be queried and listed directly. Captured output is closed: it is stored in an internal binary format and can only be reached through Atuin, by search or by history ID, with no way to list it all. What comes back is clear text, linked to `history.db` by `id`.
 
 Next step: try the MCP server's `atuin_output` on each `id` from `history.db`, to read all output without needing a search word.
+
+## How logging and capture work
+
+One command goes down two paths that share its history `id`. Paths below are under `vendor/atuin/crates/`.
+
+```
+bash preexec ─ atuin history start ──gRPC StartHistory──▶ daemon: keep in memory
+bash prints OSC C;<id> ─▶ pty-proxy starts capturing
+   …command output…  ─▶ pty-proxy renders it in a vt100 screen
+bash prints OSC D;<id> ─▶ pty-proxy ──gRPC RegisterCommandOutput──▶ daemon: filter → fjall + FTS5
+bash precmd ─ atuin history end ──gRPC EndHistory──▶ daemon: record store → history.db
+```
+
+### Logging the command
+
+1. Before the command runs, `__atuin_preexec` runs `atuin history start` ([atuin.bash:94](vendor/atuin/crates/atuin/src/shell/atuin.bash#L94)) and sets `ATUIN_HISTORY_ID`.
+2. The CLI sends it to the daemon ([history.rs:543](vendor/atuin/crates/atuin/src/command/client/history.rs#L543), [daemon.rs:156](vendor/atuin/crates/atuin/src/command/client/daemon.rs#L156)). If the daemon is down, it writes locally instead ([history.rs:426](vendor/atuin/crates/atuin/src/command/client/history.rs#L426)).
+3. The daemon only keeps it in memory ([grpc/history/mod.rs:58](vendor/atuin/crates/atuin-daemon/src/grpc/history/mod.rs#L58), [history_journal.rs:346](vendor/atuin/crates/atuin-daemon/src/history_journal.rs#L346)).
+4. Once the command finishes, `__atuin_precmd` runs `atuin history end` in the background ([atuin.bash:147](vendor/atuin/crates/atuin/src/shell/atuin.bash#L147)), which reaches `HistoryJournal::finish` ([history_journal.rs:384](vendor/atuin/crates/atuin-daemon/src/history_journal.rs#L384)). It writes:
+   * the record store first, which is the source of truth ([store.rs:297](vendor/atuin/crates/atuin-client/src/history/store.rs#L297))
+   * then the `history.db` row ([database.rs:433](vendor/atuin/crates/atuin-client/src/database.rs#L433)). If this fails, the row comes back on `atuin store rebuild history`.
+
+### Capturing the output
+
+1. Bash prints `OSC 18188735;C;<id>` before the output and `…;D;<id>` after it ([atuin.bash:42](vendor/atuin/crates/atuin/src/shell/atuin.bash#L42), [:53](vendor/atuin/crates/atuin/src/shell/atuin.bash#L53)), only when pty-proxy owns the terminal.
+2. pty-proxy reads the shell's output, parses the markers and passes the bytes on unchanged ([runtime.rs:219](vendor/atuin/crates/atuin-pty-proxy/src/runtime.rs#L219), [parser.rs:193](vendor/atuin/crates/atuin-pty-proxy/src/parser.rs#L193)).
+3. A vt100 emulator renders the output ([screen.rs:110](vendor/atuin/crates/atuin-pty-proxy/src/screen.rs#L110)). On `C` the screen is cleared ([capture.rs:140](vendor/atuin/crates/atuin-pty-proxy/src/capture.rs#L140)). On `D` it takes the rendered text, including lines that scrolled off, and sends it to the sink ([capture.rs:153](vendor/atuin/crates/atuin-pty-proxy/src/capture.rs#L153), [:218](vendor/atuin/crates/atuin-pty-proxy/src/capture.rs#L218)). So what is stored is what the screen showed, not the raw bytes. Full-screen programs (alternate screen) are skipped, and long output keeps only its start and end.
+4. Still in pty-proxy, secrets are redacted and the capture is sent to the daemon ([command/mod.rs:148](vendor/atuin/crates/atuin/src/command/mod.rs#L148), [:177](vendor/atuin/crates/atuin/src/command/mod.rs#L177)).
+5. The daemon drops the output, without an error, if capture is off, the command may hold secrets, matches the output filter, or names a sensitive file ([history_journal.rs:677](vendor/atuin/crates/atuin-daemon/src/history_journal.rs#L677)).
+6. It then writes the output to fjall as MessagePack, and the start and end text to the FTS5 index ([persistence/mod.rs:53](vendor/atuin/crates/atuin-daemon/src/output_capture/persistence/mod.rs#L53), [blob/fjall/mod.rs:57](vendor/atuin/crates/atuin-daemon/src/output_capture/persistence/blob/fjall/mod.rs#L57)). A missed index entry is fixed later by the reconciler. Old output is removed once the disk limit is reached (`output_capture/engine/`).
+
+### What matters for Collect
+
+* The output usually arrives *before* `history end`, so the daemon matches it to the in-memory command, not to `history.db`.
+* Output can be missing for a command that is in `history.db`, because the filters drop it without an error.
+* To step through all of this, run the "atuin daemon" launch config, then "atuin pty-proxy" (both debug builds, `.atuin-output`), and run a command in its terminal.
