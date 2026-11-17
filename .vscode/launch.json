@@ -71,6 +71,21 @@
       },
       "sourceLanguages": ["rust"],
       "terminal": "integrated"
+    },
+    {
+      "name": "atuin bash hooks (.atuin-output)",
+      "type": "bashdb",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/debug-atuin-hooks.sh",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ATUIN_HOME": "${workspaceFolder}/.atuin-output",
+        "ATUIN_UPDATE_CHECK": "false",
+        "ATUIN_DAEMON__ENABLED": "true",
+        "ATUIN_DAEMON__AUTOSTART": "true",
+        "ATUIN_OUTPUT__ENABLED": "true"
+      },
+      "terminalKind": "integrated"
     }
   ],
   "inputs": [
