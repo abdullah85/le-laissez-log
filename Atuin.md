@@ -149,3 +149,4 @@ bash precmd ─ atuin history end ──gRPC EndHistory──▶ daemon: record 
 * The output usually arrives *before* `history end`, so the daemon matches it to the in-memory command, not to `history.db`.
 * Output can be missing for a command that is in `history.db`, because the filters drop it without an error.
 * To step through all of this, run the "atuin daemon" launch config, then "atuin pty-proxy" (both debug builds, `.atuin-output`), and run a command in its terminal.
+* To step through only the bash hooks, see [Atuin-bash-hooks.md](Atuin-bash-hooks.md).
