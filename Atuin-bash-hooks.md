@@ -60,5 +60,7 @@ ATUIN_HOME=$PWD/.atuin-output ATUIN_DAEMON__ENABLED=true ATUIN_DAEMON__AUTOSTART
 
 ## Notes
 
+* The bash tricks used in the hooks (`EPOCHREALTIME`, `${var-}`, `declare -p` and others) are explained in [Bash-learnings.md](Bash-learnings.md).
+
 * Each run adds one row to `.atuin-output/data/history.db` (e.g. `echo debug-hooks-test`, exit 0), but no output: nothing reads the markers without pty-proxy.
 * The run autostarts a daemon on `.atuin-output`, which keeps running. To stop it: `ATUIN_HOME=$PWD/.atuin-output .venv/bin/atuin daemon stop`. Wait a second first, so the background `atuin history end` can finish.
