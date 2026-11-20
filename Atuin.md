@@ -99,6 +99,8 @@ Every store is linked by the history entry's `id`:
 
 ### Reading it
 
+Ready-to-run commands for history, output and logs are in [Atuin-reading-data.md](Atuin-reading-data.md).
+
 * `atuin output search --style json <words>` ([reference](https://docs.atuin.sh/latest/reference/output/)) returns `id`, `timestamp_unix_ns`, `command`, `cwd`, `session`, `exit`, `duration_ns` and `output`.
   * Words match whole words, ignoring case. Hyphens split words, so `capture` matches `capture-test-123`.
 * There is no command to list all output; search always needs a word.
