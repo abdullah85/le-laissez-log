@@ -4,7 +4,7 @@ Le Laissez-Log helps developers recall, review and revise what they learn by laz
 
 ## **Note**
 
-I created this repository as part of my [week 3 entry](https://dev.to/devteam/join-the-hacktoberfest-open-source-ai-challenge-slow-and-steady-2850-in-prizes-across-21-3iee) for Hacktoberfest. The [submitted post](https://dev.to/abdullah85/le-laissez-log-record-what-you-learn-everyday-lazily-in-the-background-2ogb) describes an initial version. The [initial version](https://github.com/abdullah85/le-laissez-log/tree/5cb36a1f077f4fa164feb8a31134a199aebc14c3) was hurriedly developed with Claude Code for submitting within the deadline. I did cover a lot of ground especially getting to know more about activity watch and how it works. I hope to continue developing this further.
+I created this repository as part of my [Week 3 entry](https://dev.to/devteam/join-the-hacktoberfest-open-source-ai-challenge-slow-and-steady-2850-in-prizes-across-21-3iee) for the Hacktoberfest Open Source AI Challenge. The [submitted post](https://dev.to/abdullah85/le-laissez-log-record-what-you-learn-everyday-lazily-in-the-background-2ogb) describes the [initial version](https://github.com/abdullah85/le-laissez-log/tree/5cb36a1f077f4fa164feb8a31134a199aebc14c3), which I rapidly prototyped with Claude Code to meet the submission deadline. Along the way I covered a lot of ground, especially in learning how ActivityWatch works. I plan to keep developing it.
 
 ## About
 
