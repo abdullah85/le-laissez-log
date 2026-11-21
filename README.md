@@ -37,7 +37,7 @@ For the collection phase, [ActivityWatch](https://activitywatch.net/) looks like
 
 ## Atuin
 
-Evaluate [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight and the evaluation is ongoing for this project with [Atuin.md](Atuin.md) recording the findings thus far.
+Evaluate [atuinsh](https://github.com/atuinsh/atuin) which is quite popular and seems much more lightweight and the evaluation is ongoing for this project with [Atuin.md](docs/Atuin.md) recording the findings thus far.
 
 To try it without changing your own shell setup:
 

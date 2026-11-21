@@ -4,7 +4,7 @@ How to step through the bash side of Atuin, one command at a time, in VS Code. S
 
 ## What runs
 
-`eval "$(atuin init bash)"` loads `atuin.bash` ([upstream](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash) · [local](vendor/atuin/crates/atuin/src/shell/atuin.bash)). Around every command, bash calls two of its functions:
+`eval "$(atuin init bash)"` loads `atuin.bash` ([upstream](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash) · [local](../vendor/atuin/crates/atuin/src/shell/atuin.bash)). Around every command, bash calls two of its functions:
 
 ```text
 __atuin_preexec "echo …"            before the command
@@ -21,13 +21,13 @@ __atuin_precmd                       after the command
   148  ATUIN_HISTORY_ID=""
 ```
 
-Line links: [94](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L94) · [local](vendor/atuin/crates/atuin/src/shell/atuin.bash#L94), [42](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L42) · [local](vendor/atuin/crates/atuin/src/shell/atuin.bash#L42), [101](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L101) · [local](vendor/atuin/crates/atuin/src/shell/atuin.bash#L101), [53](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L53) · [local](vendor/atuin/crates/atuin/src/shell/atuin.bash#L53), [147](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L147) · [local](vendor/atuin/crates/atuin/src/shell/atuin.bash#L147).
+Line links: [94](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L94) · [local](../vendor/atuin/crates/atuin/src/shell/atuin.bash#L94), [42](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L42) · [local](../vendor/atuin/crates/atuin/src/shell/atuin.bash#L42), [101](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L101) · [local](../vendor/atuin/crates/atuin/src/shell/atuin.bash#L101), [53](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L53) · [local](../vendor/atuin/crates/atuin/src/shell/atuin.bash#L53), [147](https://github.com/atuinsh/atuin/blob/ad5bf5c35b7788c05b8d936f5da59c9ab1ac320e/crates/atuin/src/shell/atuin.bash#L147) · [local](../vendor/atuin/crates/atuin/src/shell/atuin.bash#L147).
 
 The markers are printed only when pty-proxy owns the terminal (`__atuin_pty_proxy_owns_tty=1`, `ATUIN_PTY_PROXY_ACTIVE=2`). pty-proxy uses them to cut out the command's output.
 
 ## Stepping through it
 
-[scripts/debug-atuin-hooks.sh](scripts/debug-atuin-hooks.sh) loads `atuin.bash`, pretends pty-proxy owns the terminal, and calls the two hooks by hand around one command (default `echo debug-hooks-test`, or the first argument).
+[scripts/debug-atuin-hooks.sh](../scripts/debug-atuin-hooks.sh) loads `atuin.bash`, pretends pty-proxy owns the terminal, and calls the two hooks by hand around one command (default `echo debug-hooks-test`, or the first argument).
 
 Needs the Bash Debug extension (`rogalmic.bash-debug`).
 
