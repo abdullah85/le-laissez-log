@@ -52,7 +52,6 @@ make atuin-trial  # bash with Atuin hooked in (Ctrl-R / Up to search); history k
 * [Atuin-reading-data.md](docs/Atuin-reading-data.md): commands to read history, captured output and logs from `.atuin-output`.
 * [Atuin-bash-hooks.md](docs/Atuin-bash-hooks.md): stepping through Atuin's bash hooks in VS Code.
 * [Bash-learnings.md](docs/Bash-learnings.md): bash idioms found in Atuin's hooks.
-* [laissez-log-post.md](docs/laissez-log-post.md): the Hacktoberfest Week 3 submission post.
 
 ## Setup with Makefile
 
