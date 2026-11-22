@@ -15,6 +15,18 @@ $ echo $EPOCHREALTIME
 
 Atuin reads it before a command (line 97) and after it (line 101) to measure how long the command ran.
 
+### Why `declare` doesn't list it
+
+`EPOCHREALTIME` is a *dynamic* variable: bash computes its value only when it is read. `declare` and `set` with no arguments skip variables that have no stored value, so until it is read it is missing from the list. The same goes for `RANDOM`, `SECONDS`, `LINENO`, `BASHPID`, `BASH_COMMAND` and a few others:
+
+```console
+$ bash --norc -c 'declare | grep ^EPOCH'
+$ bash --norc -c ': $EPOCHREALTIME; declare | grep ^EPOCH'
+EPOCHREALTIME=1795324916.530851
+```
+
+The listed value is from the last read and goes stale. To find or check such a variable, ask for it by name: `declare -p EPOCHREALTIME`, `echo ${!EPOCH*}` (names starting with `EPOCH`), or `compgen -v`, which lists every variable name.
+
 ## `${var-}`: empty if unset
 
 `${var-}` is the value of `var`, or an empty string if `var` is not set. It changes nothing when the variable exists, but protects against two cases:
@@ -42,7 +54,7 @@ $ echo ${t//[!0-9]}
 
 `${var//pattern}` removes every match of `pattern`; `[!0-9]` matches any character that is not a digit. It removes any non-digit rather than just `.`, because some locales use a comma as the decimal separator.
 
-The duration is then the difference of the two, in microseconds; appending `000` gives nanoseconds, the unit `history.db` uses (lines 135–137):
+The duration is then the difference of the two, in microseconds; appending `000` gives nanoseconds, the unit `history.db` uses (lines 138–143):
 
 ```text
 1795052929893049 - 1795052928385940 = 1507109 µs  →  1507109000 ns (≈ 1.5 s)
@@ -99,7 +111,7 @@ declare  -x  B="2"
          └ attributes: -- none, -x exported, -a array, -i integer, -r read-only
 ```
 
-Unlike `echo`, it shows whether a variable exists at all, its attributes, and its exact value. The Bash Debug extension uses it to answer expressions typed in the Debug Console, which is why `id` shows up as `declare -- id="…"`.
+Unlike `echo`, it shows whether a variable exists at all, its attributes, and its exact value. The Bash Debug extension uses it for Watch expressions, which is why a watched `id` shows up as `declare -- id="…"`. Watch therefore needs a bare name (`BASH_SOURCE`, not `BASH_SOURCE[0]`). The Debug Console instead expands what you type as a string, so type `${BASH_SOURCE[0]}` there.
 
 ## Bonus: Atuin's history IDs are UUIDv7
 
