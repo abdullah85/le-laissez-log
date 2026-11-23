@@ -13,19 +13,7 @@ $ echo $EPOCHREALTIME
 1795052929.893049
 ```
 
-Atuin reads it before a command (line 97) and after it (line 101) to measure how long the command ran.
-
-### Why `declare` doesn't list it
-
-`EPOCHREALTIME` is a *dynamic* variable: bash computes its value only when it is read. `declare` and `set` with no arguments skip variables that have no stored value, so until it is read it is missing from the list. The same goes for `RANDOM`, `SECONDS`, `LINENO`, `BASHPID`, `BASH_COMMAND` and a few others:
-
-```console
-$ bash --norc -c 'declare | grep ^EPOCH'
-$ bash --norc -c ': $EPOCHREALTIME; declare | grep ^EPOCH'
-EPOCHREALTIME=1795324916.530851
-```
-
-The listed value is from the last read and goes stale. To find or check such a variable, ask for it by name: `declare -p EPOCHREALTIME`, `echo ${!EPOCH*}` (names starting with `EPOCH`), or `compgen -v`, which lists every variable name.
+Atuin reads it before a command (line 97) and after it (line 101) to measure how long the command ran. It is missing from `declare`'s list until something reads it; see [`declare`: listing every variable](#declare-listing-every-variable).
 
 ## `${var-}`: empty if unset
 
@@ -112,6 +100,20 @@ declare  -x  B="2"
 ```
 
 Unlike `echo`, it shows whether a variable exists at all, its attributes, and its exact value. The Bash Debug extension uses it for Watch expressions, which is why a watched `id` shows up as `declare -- id="…"`. Watch therefore needs a bare name (`BASH_SOURCE`, not `BASH_SOURCE[0]`). The Debug Console instead expands what you type as a string, so type `${BASH_SOURCE[0]}` there.
+
+## `declare`: listing every variable
+
+`declare` with no arguments prints every variable, sorted by name, then every function, in the same form as `declare -p`. In an interactive shell the functions (mostly from bash-completion) run to thousands of lines, so page it with `declare | less`.
+
+It leaves out *dynamic* variables until they are read. Bash computes their value only when asked, and `declare` skips variables with no stored value. These include `EPOCHREALTIME`, `EPOCHSECONDS`, `RANDOM`, `SRANDOM`, `SECONDS`, `LINENO`, `BASHPID` and `BASH_COMMAND`:
+
+```console
+$ bash --norc -c 'declare | grep ^EPOCH'
+$ bash --norc -c ': $EPOCHREALTIME; declare | grep ^EPOCH'
+EPOCHREALTIME=1795324916.530851
+```
+
+Once listed, the value is from that last read and goes stale. To find or check such a variable, ask for it by name: `declare -p EPOCHREALTIME`, `echo ${!EPOCH*}` (names starting with `EPOCH`), or `compgen -v`, which lists every variable name.
 
 ## Bonus: Atuin's history IDs are UUIDv7
 
