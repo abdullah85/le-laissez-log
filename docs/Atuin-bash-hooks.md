@@ -33,7 +33,7 @@ Needs the Bash Debug extension (`rogalmic.bash-debug`).
 
 1. Open `vendor/atuin/crates/atuin/src/shell/atuin.bash` and set breakpoints on lines 94, 96, 101 and 147.
 2. Run and Debug (Ctrl-Shift-D) → **"atuin bash hooks (.atuin-output)"** → F5. It stops at the top of the script; F5 again runs to line 94.
-3. F10 steps over, F11 steps into (e.g. line 96 into `__atuin_mark_output_start`), F5 runs to the next breakpoint. Hover or add a Watch for `$id`, `$ATUIN_HISTORY_ID`, `$EXIT`, `$1`.
+3. F10 steps over, F11 steps into (e.g. line 96 into `__atuin_mark_output_start`), F5 runs to the next breakpoint. Hover, or add a Watch for `id`, `ATUIN_HISTORY_ID`, `EXIT` and `cmd` (bare names; `$1` shows the debugger's own arguments, and `cmd` holds the same value).
 
 What to look for:
 
@@ -41,6 +41,27 @@ What to look for:
 * The markers print nothing visible; they are escape codes the terminal swallows.
 * Line 147 runs in the background (`&`), so stepping over it returns at once.
 * If breakpoints in `atuin.bash` stay grey (unverified), press F11 on the `__atuin_preexec` line of the script to step into it.
+* F11 on lines 94 and 147 does not enter Atuin: they start a separate `atuin` process (the release build from `.venv/bin`), which bashdb cannot follow. See the next section.
+
+## Stepping into `atuin history start` and `end`
+
+Two lldb launch configs run what lines 94 and 147 run, using the debug build (`cd vendor/atuin && cargo build -p atuin`). Needs the CodeLLDB extension.
+
+* **"atuin history start (debug build, .atuin-output)"** asks for the command line and prints the new history ID.
+* **"atuin history end (debug build, .atuin-output)"** asks for that ID and finishes the row with exit 0.
+
+Set breakpoints before launching, or the run finishes without stopping. In [history.rs](../vendor/atuin/crates/atuin/src/command/client/history.rs):
+
+* `start_history_entry` ([535](../vendor/atuin/crates/atuin/src/command/client/history.rs#L535)): F11 into `make_starting_history`, which builds the `History` row.
+* `end_history_entry` ([568](../vendor/atuin/crates/atuin/src/command/client/history.rs#L568)).
+* `handle_start` ([426](../vendor/atuin/crates/atuin/src/command/client/history.rs#L426)) and `handle_end` ([442](../vendor/atuin/crates/atuin/src/command/client/history.rs#L442)): save to SQLite directly.
+
+Both go to the daemon first and fall back to SQLite when it can't be reached. These configs don't autostart the daemon, so:
+
+1. **Without a daemon**: the daemon call fails, and `handle_start` / `handle_end` run in the same process.
+2. **With the daemon**: start "atuin daemon (debug build, .atuin-output)" first, and set breakpoints in its `start_history` and `end_history` ([grpc/history/mod.rs:58](../vendor/atuin/crates/atuin-daemon/src/grpc/history/mod.rs#L58), [72](../vendor/atuin/crates/atuin-daemon/src/grpc/history/mod.rs#L72)). The client now returns early, and the row is saved in the daemon process. Running "atuin bash hooks" also hits these, straight from the bash script.
+
+Until `history end` runs, the row has `duration` and `exit` set to -1.
 
 ## Seeing the markers
 

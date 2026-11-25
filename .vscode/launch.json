@@ -73,6 +73,39 @@
       "terminal": "integrated"
     },
     {
+      "name": "atuin history start (debug build, .atuin-output)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/atuin/target/debug/atuin",
+      "args": ["history", "start", "--hook", "--", "${input:atuinCommand}"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ATUIN_HOME": "${workspaceFolder}/.atuin-output",
+        "ATUIN_UPDATE_CHECK": "false",
+        "ATUIN_DAEMON__ENABLED": "true",
+        "ATUIN_OUTPUT__ENABLED": "true",
+        "ATUIN_SHELL": "bash"
+      },
+      "sourceLanguages": ["rust"],
+      "terminal": "integrated"
+    },
+    {
+      "name": "atuin history end (debug build, .atuin-output)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/atuin/target/debug/atuin",
+      "args": ["history", "end", "--hook", "--exit", "0", "--", "${input:atuinHistoryId}"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ATUIN_HOME": "${workspaceFolder}/.atuin-output",
+        "ATUIN_UPDATE_CHECK": "false",
+        "ATUIN_DAEMON__ENABLED": "true",
+        "ATUIN_OUTPUT__ENABLED": "true"
+      },
+      "sourceLanguages": ["rust"],
+      "terminal": "integrated"
+    },
+    {
       "name": "atuin bash hooks (.atuin-output)",
       "type": "bashdb",
       "request": "launch",
@@ -94,6 +127,17 @@
       "type": "promptString",
       "description": "Words to search for in captured output",
       "default": "capture"
+    },
+    {
+      "id": "atuinCommand",
+      "type": "promptString",
+      "description": "Command line to record, as the preexec hook would pass it",
+      "default": "echo debug-hooks-test"
+    },
+    {
+      "id": "atuinHistoryId",
+      "type": "promptString",
+      "description": "History id printed by `atuin history start`"
     }
   ]
 }
