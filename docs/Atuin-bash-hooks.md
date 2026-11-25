@@ -50,6 +50,14 @@ Two lldb launch configs run what lines 94 and 147 run, using the debug build (`c
 * **"atuin history start (debug build, .atuin-output)"** asks for the command line and prints the new history ID.
 * **"atuin history end (debug build, .atuin-output)"** asks for that ID and finishes the row with exit 0.
 
+The questions come from the `inputs` section at the bottom of [launch.json](../.vscode/launch.json). An argument such as `${input:atuinCommand}` names an input there; a `promptString` input opens a text box on F5, with its `description` as the prompt and its `default` filled in. The answer replaces the `${input:…}` argument.
+
+| Input | Used by | Default |
+| --- | --- | --- |
+| `atuinCommand` | history start | `echo debug-hooks-test`, the same as `debug-atuin-hooks.sh`, so rows from both look alike |
+| `atuinHistoryId` | history end | none: paste the ID `history start` printed |
+| `atuinQuery` | output search | `capture` |
+
 Set breakpoints before launching, or the run finishes without stopping. In [history.rs](../vendor/atuin/crates/atuin/src/command/client/history.rs):
 
 * `start_history_entry` ([535](../vendor/atuin/crates/atuin/src/command/client/history.rs#L535)): F11 into `make_starting_history`, which builds the `History` row.
