@@ -53,7 +53,7 @@ Two lldb launch configs run what lines 94 and 147 run, using the debug build (`c
 The questions come from the `inputs` section at the bottom of [launch.json](../.vscode/launch.json). An argument such as `${input:atuinCommand}` names an input there; a `promptString` input opens a text box on F5, with its `description` as the prompt and its `default` filled in. The answer replaces the `${input:…}` argument.
 
 | Input | Used by | Default |
-|---|---|---|
+| --- | --- | --- |
 | `atuinCommand` | history start | `echo debug-hooks-test`, the same as `debug-atuin-hooks.sh`, so rows from both look alike |
 | `atuinHistoryId` | history end | none: paste the ID `history start` printed |
 | `atuinQuery` | output search | `capture` |
