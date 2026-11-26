@@ -115,7 +115,7 @@ EPOCHREALTIME=1795324916.530851
 
 Once listed, the value is from that last read and goes stale. To find or check such a variable, ask for it by name: `declare -p EPOCHREALTIME`, `echo ${!EPOCH*}` (names starting with `EPOCH`), or `compgen -v`, which lists every variable name.
 
-## Bonus: Atuin's history IDs are UUIDv7
+## Atuin's history IDs are UUIDv7
 
 An ID such as `01a1f18a10b876ba97f5f54166f24eed` starts with a timestamp:
 
