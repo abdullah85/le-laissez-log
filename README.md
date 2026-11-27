@@ -1,6 +1,6 @@
 # Le Laissez Log
 
-Le Laissez-Log helps developers recall, review and revise what they learn by lazily collecting events in the background, then turning them into entries and posts anywhere on a spectrum of AI assistance, from self-authored to fully AI-generated.
+Le Laissez-Log is intended to help developers recall, review and revise what they learn by lazily collecting events in the background, then turning them into entries and posts anywhere on a spectrum of AI assistance, from self-authored to fully AI-generated.
 
 ## **Note**
 
